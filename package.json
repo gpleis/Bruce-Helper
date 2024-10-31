@@ -29,8 +29,14 @@
   "dependencies": {
     "@discordjs/voice": "^0.17.0",
     "@types/node": "^22.8.4",
+    "bruce-helper": "file:",
+    "discord-api-types": "^0.37.103",
     "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^5.2.0",
+    "libsodium-wrappers": "^0.7.15",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "tsup": "^8.3.5",
