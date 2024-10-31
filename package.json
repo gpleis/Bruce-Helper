@@ -4,11 +4,12 @@
   "description": "ajudante de bruce",
   "main": "app.js",
   "scripts": {
-    "build-tsup": "tsup src/index.ts --minify",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "deploy": "node dist/deploy-commands.js",
     "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build-tsup": "tsup src/index.ts --minify",
+    "postbuild": "copyfiles -u 1 src/assets/* dist/",
+    "build": "tsc",
+    "deploy": "node dist/deploy-commands.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -39,6 +40,7 @@
     "node-cron": "^3.0.3"
   },
   "devDependencies": {
+    "copyfiles": "^2.4.1",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3"
