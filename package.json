@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/JustNat/discord.js#readme",
   "dependencies": {
-    "@discordjs/voice": "^0.10.0",
-    "discord.js": "^13.8.0"
+    "@discordjs/voice": "^0.17.0",
+    "discord.js": "^14.16.3"
   }
 }
