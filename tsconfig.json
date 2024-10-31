@@ -6,7 +6,12 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
-    "esModuleInterop": true
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

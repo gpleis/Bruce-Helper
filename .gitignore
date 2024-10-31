@@ -3,3 +3,5 @@ config.json
 package-lock.json
 *.tsbuildinfo
 dist
+yarn.lock
+.env

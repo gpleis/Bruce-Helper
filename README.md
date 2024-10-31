@@ -8,6 +8,8 @@
 ## Participantes
 | [<img src="https://github.com/gabrielfontineli.png?size=115" width=115><br><sub>@gabrielfontineli :notes:</sub>](https://github.com/gabrielfontineli) | [<img src="https://github.com/JustNat.png?size=115" width=115><br><sub>@JustNat :fish:</sub>](https://github.com/JustNat) | [<img src="https://github.com/gabrielgui13.png?size=115" width=115><br><sub>@gabrielgui13 :older_man:</sub>](https://github.com/gabrielgui13) |
 | :---: | :---: | :---: |
-## Divirta-se!
-<img src="assets/ggjacare.jpg" data-canonical-src="assets/ggjacare.jpg" alt="oi" width="200" height="300"/>
 
+[Typescript](https://dev.to/fellipeutaka/creating-your-first-discord-bot-using-typescript-1eh6)
+
+## Divirta-se!
+<img src="src/assets/ggjacare.jpg" data-canonical-src="assets/ggjacare.jpg" alt="oi" width="200" height="300"/>
