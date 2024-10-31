@@ -4,6 +4,7 @@
   "description": "ajudante de bruce",
   "main": "app.js",
   "scripts": {
+    "build-tsup": "tsup src/index.ts --minify",
     "build": "tsc",
     "start": "node dist/index.js",
     "deploy": "node dist/deploy-commands.js",
