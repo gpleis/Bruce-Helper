@@ -1,7 +1,6 @@
 import { Client, GatewayIntentBits, Events, TextChannel, VoiceChannel } from 'discord.js';
-import { createAudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus } from '@discordjs/voice';
+import { createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, getVoiceConnection, joinVoiceChannel, NoSubscriberBehavior, VoiceConnectionStatus } from '@discordjs/voice';
 import { BOT_TOKEN } from './config/config';
-import { channel } from 'diagnostics_channel';
 
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds,
@@ -21,7 +20,7 @@ client.once(Events.ClientReady, async client => {
 
 client.on(Events.ClientReady, async thisClient => {
   const uoltipapo = client.channels.cache.get('582999750308134916') as TextChannel;
-
+  
   //pega o refugo
   const channel = client.channels.cache.get('1300271303324074005') as VoiceChannel;
 
@@ -33,7 +32,7 @@ client.on(Events.ClientReady, async thisClient => {
     const voiceConnection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
-      adapterCreator: channel.guild.voiceAdapterCreator,
+      adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
     });
 
     //pega o dingdong nos assest
