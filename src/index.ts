@@ -70,7 +70,10 @@ client.on(Events.MessageCreate, async (message) => {
     message.content.toLowerCase().includes("civic")
   ) {
     const member = message.member;
-    member?.voice.setMute(true);
+    if(member?.voice.channel){
+      member?.voice.setMute(true);
+    }
+    
   } else if (message.content.toLowerCase().includes("civic")) {
     await message.channel.send("Você disse...");
     const randInt = Math.floor(Math.random() * 5);
