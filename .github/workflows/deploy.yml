@@ -68,7 +68,7 @@ jobs:
           echo "Connecting to Azure VM"
           ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
             # Navigate to the bot directory
-            cd /path/to/your/bot_directory
+            cd /bh/bruce_helper
 
             # Pull the latest changes from GitHub
             git pull origin main
