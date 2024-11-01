@@ -67,10 +67,11 @@ client.on(Events.MessageCreate, async (message) => {
   const normalizedContent = message.content
   .toLowerCase()
   .replace(/\s+/g, ' ')
-  .replace(/[^a-z0-9 ]/g, '')
+  .replace(/[^a-z0-9ã ]/g, '')
 
-  const dislikeCivic = normalizedContent.includes("nao gosto") && normalizedContent.includes("civic")
-
+  const dislikeCivic = (normalizedContent.includes("não") || normalizedContent.includes("nao") || normalizedContent.includes("n")) 
+                        && normalizedContent.includes("gosto") 
+                        && normalizedContent.includes("civic");
   if(dislikeCivic){
     const member = message.member;
     if(member?.voice.channel){

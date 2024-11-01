@@ -1,0 +1,87 @@
+name: Build and Deploy Discord Bot
+
+on:
+  push:
+    branches: [ "main" ]  # Trigger on pushes to main
+  workflow_dispatch:       # Allow manual trigger
+
+env:
+  NODE_VERSION: '16'  # Specify the Node.js version to use
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Bot
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build TypeScript
+        run: yarn build-tsup  # Adjust if you have a different build command
+
+      - name: Upload artifact for deployment
+        uses: actions/upload-artifact@v3
+        with:
+          name: bot-build
+          path: .
+      
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy Bot
+    needs: build
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: bot-build
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Deploy to Azure VM
+        env:
+          HOST: ${{ secrets.SSH_HOST }}
+          USER: ${{ secrets.SSH_USER }}
+          PM2_APP_NAME: bot-app  # Replace with your PM2 process name
+        run: |
+          echo "Connecting to Azure VM"
+          ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+            # Navigate to the bot directory
+            cd /path/to/your/bot_directory
+
+            # Pull the latest changes from GitHub
+            git pull origin main
+
+            # Install any new dependencies
+            yarn install --frozen-lockfile
+
+            # Build TypeScript files
+            yarn build-tsup  # Adjust if needed
+
+            # Restart the bot process with zero-downtime using PM2
+            pm2 reload $PM2_APP_NAME --update-env || pm2 start dist/index.js --name $PM2_APP_NAME
+
+            # Optional: Save PM2 state
+            pm2 save
+          EOF
