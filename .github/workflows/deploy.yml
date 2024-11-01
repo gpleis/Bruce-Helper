@@ -6,7 +6,7 @@ on:
   workflow_dispatch:       # Allow manual trigger
 
 env:
-  NODE_VERSION: '16'  # Specify the Node.js version to use
+  NODE_VERSION: '22'  # Specify the Node.js version to use
 
 jobs:
   build:
