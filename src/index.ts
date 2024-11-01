@@ -5,6 +5,7 @@ import {
   TextChannel,
   VoiceChannel,
   ChannelType,
+  ActivityType,
 } from "discord.js";
 import {
   createAudioPlayer,
@@ -16,6 +17,8 @@ import {
 } from "@discordjs/voice";
 import { BOT_TOKEN } from "./config/config";
 import cron from "node-cron";
+import { handleBotInteraction } from "./services/botInteraction";
+import { handleDotCall } from "./services/dotCall";
 
 const client = new Client({
   intents: [
@@ -29,6 +32,65 @@ const client = new Client({
 
 const task = cron.schedule("0 0,12 * * *", async () => {
   client.emit("gongo", client)
+});
+
+client.once(Events.ClientReady, async (client) => {
+  console.log(`Ready! Logged in as ${client.user?.tag}`);
+
+  const uoltipapo = client.channels.cache.get(
+    "582999750308134916",
+  ) as TextChannel;
+
+  const readyMessages = [
+    "OFICIALMENTE ONLINE E METENDO",
+    "TIREM AS MULHERES E CRIANÇAS DA FRENTE, BRUCE METE CHEGOU",
+    "Bom dia! Vamos meter!",
+    "Ohayo domo arigato gozaimasu! Ore wa BURUCE SEX HERUPER!",
+    "Iniciando protocolo GPLAYS",
+    // write 5 more messages under leading the line from those above
+  ]
+
+  const messagePicker = Math.floor(Math.random() * readyMessages.length)
+
+  uoltipapo?.send(readyMessages[messagePicker]);
+
+  client.user.setActivity("com a mãe de vocês", {
+    type: ActivityType.Playing,
+  });
+});
+
+client.on(Events.MessageCreate, async (message) => {
+  if (message.author.bot) return;
+
+  if (message.content.toLowerCase().includes("nao gosto") && message.content.toLowerCase().includes("civic")) {
+    const member = message.member;
+    member?.voice.setMute(true);
+  }
+  else if (message.content.toLowerCase().includes("civic")) { 
+    await message.channel.send("Você disse...");
+    const randInt = Math.floor(Math.random() * 5)
+
+    for (let i = 0; i < randInt; i++) {
+      await message.channel.send("Civic?");
+    }
+  }
+
+  if (message.content.startsWith(".")) {{
+    await handleDotCall(message, client)
+  }} 
+  else if (message.content.includes("bot")) {
+    await handleBotInteraction(client, message);
+  }
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const { commandName } = interaction;
+
+  if (commandName === "ping") {
+    await interaction.reply("Pong!");
+  }
 });
 
 client.on("gongo", async (client) => {
@@ -101,59 +163,6 @@ client.on("gongo", async (client) => {
     }
   }
 })
-
-client.once(Events.ClientReady, async (client) => {
-  console.log(`Ready! Logged in as ${client.user?.tag}`);
-  
-  const uoltipapo = client.channels.cache.get(
-    "582999750308134916",
-  ) as TextChannel;
-
-  const readyMessages = [
-    "OFICIALMENTE ONLINE E METENDO",
-    "TIREM AS MULHERES E CRIANÇAS DA FRENTE, BRUCE METE CHEGOU",
-    "Bom dia! Vamos meter!",
-    "Ohayo domo arigato gozaimasu! Ore wa BURUCE SEX HERUPER!",
-    "Iniciando protocolo GPLAYS",
-    // write 5 more messages under leading the line from those above
-  ]
-
-  const messagePicker = Math.floor(Math.random() * readyMessages.length)
-
-  uoltipapo?.send(readyMessages[messagePicker]);
-});
-
-client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot) return;
-
-  const randInt = Math.floor(Math.random() * 5)
-
-  if (message.content.toLowerCase().includes("nao gosto") && message.content.toLowerCase().includes("civic")) {
-    const member = message.member;
-    member?.voice.setMute(true);
-  }
-  else if (message.content.toLowerCase().includes("civic")) { 
-    await message.channel.send("Você disse...");
-
-    for (let i = 0; i < randInt; i++) {
-      await message.channel.send("Civic?");
-    }
-  }
-
-  if (message.content === "gongo") {
-
-  }
-});
-
-client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  const { commandName } = interaction;
-
-  if (commandName === "ping") {
-    await interaction.reply("Pong!");
-  }
-});
 
 task.start();
 client.login(BOT_TOKEN);
