@@ -37,6 +37,9 @@ jobs:
       - name: Build TypeScript
         run: yarn build-tsup  # Adjust if you have a different build command
 
+      - name: Run post build to get gongo
+        run: yarn post-build-tsup
+
       - name: Create ZIP Archive of Build
         run: zip -r bot-build.zip dist/
 
@@ -70,28 +73,25 @@ jobs:
         run: |
           echo "Connecting to Azure VM"
           ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-            # Source profile to ensure PATH includes Yarn, Node.js, and PM2
-            source ~/.bashrc  # Or ~/.profile, depending on your setup
+            # Add NVM binaries to PATH
+            export PATH=$PATH:/home/rafael52468/.nvm/versions/node/v22.9.0/bin
+
+            # Source NVM script to load Node.js environment
+            [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
 
             # Confirm that the project directory exists
             cd /home/rafael52468/bh/bruce_helper  # Update with the correct path
 
             # Pull the latest changes from GitHub
-            if [ -d ".git" ]; then
-              git pull origin main
-            else
-              echo "Not a git repository. Skipping git pull."
-            fi
+            git pull origin main || git pull origin master
 
-            # Install dependencies (confirm Yarn is installed)
-            which yarn || echo "Yarn is not installed or in the PATH"
+            # Install dependencies
             yarn install --frozen-lockfile
 
             # Build TypeScript files
             yarn build-tsup
 
             # Start or reload the bot process with PM2
-            which pm2 || echo "PM2 is not installed or in the PATH"
             pm2 reload $PM2_APP_NAME --update-env || pm2 start dist/index.js --name $PM2_APP_NAME
 
             # Save PM2 state
