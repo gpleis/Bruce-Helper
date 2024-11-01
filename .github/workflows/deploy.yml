@@ -38,7 +38,7 @@ jobs:
         run: yarn build-tsup  # Adjust if you have a different build command
 
       - name: Run post build to get gongo
-        run: yarn post-build-tsup
+        run: yarn postbuild
 
       - name: Create ZIP Archive of Build
         run: zip -r bot-build.zip dist/
