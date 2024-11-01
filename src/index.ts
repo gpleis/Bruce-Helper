@@ -21,6 +21,8 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
   ],
 });
 
@@ -37,6 +39,19 @@ client.on(Events.ClientReady, async (thisClient) => {
   const uoltipapo = client.channels.cache.get(
     "582999750308134916",
   ) as TextChannel;
+
+  const readyMessages = [
+    "OFICIALMENTE ONLINE E METENDO",
+    "TIREM AS MULHERES E CRIANÇAS DA FRENTE, BRUCE METE CHEGOU",
+    "Bom dia! Vamos meter!",
+    "Ohayo domo arigato gozaimasu! Ore wa BURUCE SEX HERUPER!",
+    "Iniciando protocolo GPLAYS",
+    // write 5 more messages under leading the line from those above
+  ]
+
+  const messagePicker = Math.floor(Math.random() * readyMessages.length)
+
+  uoltipapo?.send(readyMessages[messagePicker]);
 
   //pega o refugo
   const channel = client.channels.cache.get(
@@ -56,7 +71,7 @@ client.on(Events.ClientReady, async (thisClient) => {
     });
 
     //pega o dingdong nos assest
-    const resource = createAudioResource(__dirname + "/assets/bigben.mp3");
+    const resource = createAudioResource(__dirname + "/assets/bigben2.mp3");
 
     //cria o player
     const player = createAudioPlayer({
@@ -74,16 +89,21 @@ client.on(Events.ClientReady, async (thisClient) => {
       player.play(resource);
     });
   }
-  uoltipapo?.send("estou cansado chefe");
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  console.log(message)
   if (message.author.bot) return;
 
+  const randInt = Math.floor(Math.random() * 5)
+
+  console.log(message.content, message.content.toLowerCase().includes("civic"));
 
   if (message.content.toLowerCase().includes("civic"))
-    await message.channel.send("Civic?");
+    await message.channel.send("Você disse...");
+  
+    for (let i = 0; i < randInt; i++) {
+      await message.channel.send("Civic?");
+    }
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
