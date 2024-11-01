@@ -19,6 +19,8 @@ import { BOT_TOKEN } from "./config/config";
 import cron from "node-cron";
 import { handleBotInteraction } from "./services/botInteraction";
 import { handleDotCall } from "./services/dotCall";
+import { handleGemidao } from "./services/gemidao";
+import { handleVtnc } from "./services/vtnc";
 
 const client = new Client({
   intents: [
@@ -31,7 +33,7 @@ const client = new Client({
 });
 
 const task = cron.schedule("0 0,12 * * *", async () => {
-  client.emit("gongo", client)
+  client.emit("gongo", client);
 });
 
 client.once(Events.ClientReady, async (client) => {
@@ -48,9 +50,9 @@ client.once(Events.ClientReady, async (client) => {
     "Ohayo domo arigato gozaimasu! Ore wa BURUCE SEX HERUPER!",
     "Iniciando protocolo GPLAYS",
     // write 5 more messages under leading the line from those above
-  ]
+  ];
 
-  const messagePicker = Math.floor(Math.random() * readyMessages.length)
+  const messagePicker = Math.floor(Math.random() * readyMessages.length);
 
   uoltipapo?.send(readyMessages[messagePicker]);
 
@@ -62,25 +64,44 @@ client.once(Events.ClientReady, async (client) => {
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
-  if (message.content.toLowerCase().includes("nao gosto") && message.content.toLowerCase().includes("civic")) {
+  if (
+    message.content.toLowerCase().includes("nao gosto") &&
+    message.content.toLowerCase().includes("civic")
+  ) {
     const member = message.member;
     member?.voice.setMute(true);
-  }
-  else if (message.content.toLowerCase().includes("civic")) { 
+  } else if (message.content.toLowerCase().includes("civic")) {
     await message.channel.send("Você disse...");
-    const randInt = Math.floor(Math.random() * 5)
+    const randInt = Math.floor(Math.random() * 5);
 
     for (let i = 0; i < randInt; i++) {
       await message.channel.send("Civic?");
     }
   }
 
-  if (message.content.startsWith(".")) {{
-    await handleDotCall(message, client)
-  }} 
-  else if (message.content.includes("bot")) {
+  if (message.content.startsWith(".")) {
+    {
+      await handleDotCall(client, message);
+    }
+  } else if (message.content.toLowerCase().includes('cu') || message.content.toLowerCase().includes('vtnc') || message.content.toLowerCase().includes('tnc')) {
+    await handleVtnc(client, message);
+  } else if (message.content.toLowerCase().includes("gemid")) {
+    await handleGemidao(client, message);
+  } else if (message.content.toLowerCase().includes("bot")) {
     await handleBotInteraction(client, message);
   }
+
+  // if (message.content.startsWith(".")) {
+  //     handleDotCall(message, client);
+  // } else if (message.content.includes("gemid")) {
+  //     handleGemidao(message);
+  // } else if (message.content.endsWith('vai tomar no cu')) {
+  //     handleVtnc(message);
+  // } else if (message.content.includes('bot')) {
+  //     handleBotInteraction(message);
+  // } else if (message.content.endsWith('?')) {
+  //     handleQuestions(message);
+  // }
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -95,30 +116,33 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.on("gongo", async (client) => {
   console.log("GONGO!");
-  
-  const refugoChannels = client.channels.cache.filter((channel: VoiceChannel) => {
-    const voiceChannel = channel;
 
-    if (
-        voiceChannel.type === ChannelType.GuildVoice && 
-        voiceChannel.members.size > 0 && 
+  const refugoChannels = client.channels.cache.filter(
+    (channel: VoiceChannel) => {
+      const voiceChannel = channel;
+
+      if (
+        voiceChannel.type === ChannelType.GuildVoice &&
+        voiceChannel.members.size > 0 &&
         voiceChannel.name.toLowerCase().includes("refugo")
       ) {
-      return voiceChannel;
-    }
-  });
+        return voiceChannel;
+      }
+    },
+  );
 
   if (refugoChannels.size > 0) {
-    const refugoFinal: VoiceChannel = refugoChannels.sort((a: VoiceChannel, b: VoiceChannel) => {
-      const voiceChannelA = a;
-      const voiceChannelB = b;
-      return voiceChannelB.members.size - voiceChannelA.members.size;
-  
-    }).first() as VoiceChannel;
+    const refugoFinal: VoiceChannel = refugoChannels
+      .sort((a: VoiceChannel, b: VoiceChannel) => {
+        const voiceChannelA = a;
+        const voiceChannelB = b;
+        return voiceChannelB.members.size - voiceChannelA.members.size;
+      })
+      .first() as VoiceChannel;
 
     if (refugoFinal) {
       await refugoChannels.forEach((channel: VoiceChannel) => {
-        if(channel.id === refugoFinal.id) return;
+        if (channel.id === refugoFinal.id) return;
 
         const voiceChannel = channel as VoiceChannel;
         const members = voiceChannel.members;
@@ -126,9 +150,8 @@ client.on("gongo", async (client) => {
         members.forEach((member) => {
           member.voice.setChannel(refugoFinal);
         });
-
       });
-      
+
       const voiceConnection = joinVoiceChannel({
         channelId: refugoFinal.id,
         guildId: refugoFinal.guild.id,
@@ -152,17 +175,17 @@ client.on("gongo", async (client) => {
 
       player.on("stateChange", (oldState, newState) => {
         if (newState.status === "idle") {
-          voiceConnection.destroy()
-          return
+          voiceConnection.destroy();
+          return;
         }
-        
+
         console.log(
-          `Audio player transitioned from ${oldState.status} to ${newState.status}`
+          `Audio player transitioned from ${oldState.status} to ${newState.status}`,
         );
-      })
+      });
     }
   }
-})
+});
 
 task.start();
 client.login(BOT_TOKEN);

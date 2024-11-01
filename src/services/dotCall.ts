@@ -2,7 +2,7 @@ import { AttachmentBuilder, Client, EmbedBuilder, Message, TextChannel } from "d
 
 const { MessageEmbed, MessageAttachment } = require("discord.js");
 
-export function handleDotCall(message: Message, client: Client) {
+export function handleDotCall(client: Client, message: Message) {
   const textChannel = client.channels.cache.get(message.channelId) as TextChannel
 
   if (!textChannel || !client) return;
