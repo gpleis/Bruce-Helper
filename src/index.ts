@@ -21,6 +21,7 @@ import { handleBotInteraction } from "./services/botInteraction";
 import { handleDotCall } from "./services/dotCall";
 import { handleGemidao } from "./services/gemidao";
 import { handleVtnc } from "./services/vtnc";
+import { handleQuestions } from "./services/questions";
 
 const client = new Client({
   intents: [
@@ -89,19 +90,9 @@ client.on(Events.MessageCreate, async (message) => {
     await handleGemidao(client, message);
   } else if (message.content.toLowerCase().includes("bot")) {
     await handleBotInteraction(client, message);
+  } else if (message.content.endsWith('?')) {
+    await handleQuestions(message);
   }
-
-  // if (message.content.startsWith(".")) {
-  //     handleDotCall(message, client);
-  // } else if (message.content.includes("gemid")) {
-  //     handleGemidao(message);
-  // } else if (message.content.endsWith('vai tomar no cu')) {
-  //     handleVtnc(message);
-  // } else if (message.content.includes('bot')) {
-  //     handleBotInteraction(message);
-  // } else if (message.content.endsWith('?')) {
-  //     handleQuestions(message);
-  // }
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
