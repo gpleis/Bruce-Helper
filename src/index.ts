@@ -33,12 +33,12 @@ const client = new Client({
   ],
 });
 
-const task = cron.schedule("0 0,12 * * *", async () => {
+const task = cron.schedule("3 0,12 * * *", async () => {
   client.emit("gongo", client);
 });
 
 client.once(Events.ClientReady, async (client) => {
-  console.log(`Ready! Logged in as ${client.user?.tag}`);
+  console.log(`Ready! Logged in as ${client.user?.tag}. It's now ${new Date().toLocaleString()}`);
 
   const uoltipapo = client.channels.cache.get(
     "582999750308134916",
