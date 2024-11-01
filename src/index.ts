@@ -64,17 +64,22 @@ client.once(Events.ClientReady, async (client) => {
 
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
+  const normalizedContent = message.content
+  .toLowerCase()
+  .replace(/\s+/g, ' ')
+  .replace(/[^a-z0-9 ]/g, '')
 
-  if (
-    message.content.toLowerCase().includes("nao gosto") &&
-    message.content.toLowerCase().includes("civic")
-  ) {
+  const dislikeCivic = normalizedContent.includes("nao gosto") && normalizedContent.includes("civic")
+
+  if(dislikeCivic){
     const member = message.member;
     if(member?.voice.channel){
-      member?.voice.setMute(true);
-    }
-    
-  } else if (message.content.toLowerCase().includes("civic")) {
+      try{
+        await member.voice.setMute(true);
+      }catch(error){
+        console.error("Erro ao tentar mutar o viado", error)
+      }
+  }}else if(normalizedContent.includes("civic")){
     await message.channel.send("Você disse...");
     const randInt = Math.floor(Math.random() * 5);
 
