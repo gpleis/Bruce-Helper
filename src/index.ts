@@ -33,7 +33,7 @@ const client = new Client({
   ],
 });
 
-const task = cron.schedule("18 3,15 * * *", async () => {
+const task = cron.schedule("19 3,15 * * *", async () => {
   client.emit("gongo", client);
 });
 
