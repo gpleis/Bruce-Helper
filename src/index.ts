@@ -33,7 +33,7 @@ const client = new Client({
   ],
 });
 
-const task = cron.schedule("19 3,15 * * *", async () => {
+const task = cron.schedule("0 3,15 * * *", async () => {
   client.emit("gongo", client);
 });
 
@@ -162,7 +162,6 @@ client.on("gongo", async (client) => {
       });
 
       await voiceConnection.on(VoiceConnectionStatus.Ready, () => {
-        console.log("Voice connection is ready!");
         voiceConnection.subscribe(player);
         player.play(resource);
       });
@@ -172,10 +171,6 @@ client.on("gongo", async (client) => {
           voiceConnection.destroy();
           return;
         }
-
-        console.log(
-          `Audio player transitioned from ${oldState.status} to ${newState.status}`,
-        );
       });
     }
   }
