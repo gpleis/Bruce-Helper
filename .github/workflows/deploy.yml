@@ -69,7 +69,7 @@ jobs:
         env:
           HOST: ${{ secrets.SSH_HOST }}
           USER: ${{ secrets.SSH_USER }}
-          PM2_APP_NAME: ${{ secrets.PM2_APP_NAME }}s
+          PM2_APP_NAME: buce-helpers
         run: |
           echo "Connecting to Azure VM"
           ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
@@ -90,6 +90,10 @@ jobs:
 
             # Build TypeScript files
             yarn build-tsup
+
+            yarn postbuild
+
+            pm2 describe $PM2_APP_NAME || echo "Process not found, starting a new one."
 
             # Start or reload the bot process with PM2
             pm2 reload $PM2_APP_NAME --update-env || pm2 start dist/index.js --name $PM2_APP_NAME
