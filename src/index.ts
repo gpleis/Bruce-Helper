@@ -36,9 +36,10 @@ const client = new Client({
 const task = cron.schedule("0 3,15 * * *", async () => {
   client.emit("gongo", client);
 });
+const {version} = require('../package.json');
 
 client.once(Events.ClientReady, async (client) => {
-  console.log(`Ready! Logged in as ${client.user?.tag}. It's now ${new Date().toString()}`);
+  console.log(`Ready! Logged in as ${client.user?.tag}. It's now ${new Date().toString()} - Version: ${version}`);
 
   const uoltipapo = client.channels.cache.get(
     "582999750308134916",
@@ -87,7 +88,7 @@ client.on(Events.MessageCreate, async (message) => {
     for (let i = 0; i < randInt; i++) {
       await message.channel.send("Civic?");
     }
-  }
+  } else
 
   if (message.content.startsWith(".")) {
     {

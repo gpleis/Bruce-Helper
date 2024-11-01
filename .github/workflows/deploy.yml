@@ -2,11 +2,11 @@ name: Build and Deploy Discord Bot
 
 on:
   push:
-    branches: [ "main" ]  # Trigger on pushes to main
-  workflow_dispatch:       # Allow manual trigger
+    branches: [ "master" ]
+  workflow_dispatch:
 
 env:
-  NODE_VERSION: '22'  # Specify the Node.js version to use
+  NODE_VERSION: '22'
 
 jobs:
   build:
@@ -16,7 +16,10 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-
+      - name: Set up Git Identity
+        run: |
+          git config --global user.name "brucehelper-helper"
+          git config --global user.email "github-actionsbuce.noreply.github.com"
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -30,22 +33,30 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
+      - name: Increment version
+        run: |
+          npm version patch --no-git-tag-version
+          git add package.json 
+          git commit -m "chore: Increment version"
+          git push
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Build TypeScript
         run: yarn build-tsup  # Adjust if you have a different build command
 
+      - name: Create ZIP Archive of Build
+        run: zip -r bot-build.zip dist/
+
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v3
         with:
           name: bot-build
-          path: .
-      
+          path: bot-build.zip  # Upload only the zip file to reduce file count
+
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy Bot
+    name: Deploy Bot to Azure VM
     needs: build
 
     steps:
@@ -63,25 +74,38 @@ jobs:
         env:
           HOST: ${{ secrets.SSH_HOST }}
           USER: ${{ secrets.SSH_USER }}
-          PM2_APP_NAME: bot-app  # Replace with your PM2 process name
+          PM2_APP_NAME: buce_helper
         run: |
           echo "Connecting to Azure VM"
           ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
-            # Navigate to the bot directory
-            cd /path/to/your/bot_directory
+            # Add NVM binaries to PATH
+            export PATH=$PATH:/home/rafael52468/.nvm/versions/node/v22.9.0/bin
+
+            # Source NVM script to load Node.js environment
+            [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
+
+            # Confirm that the project directory exists
+            cd /home/rafael52468/bh/bruce_helper  # Update with the correct path
 
             # Pull the latest changes from GitHub
-            git pull origin main
+            if [ -d ".git" ]; then
+              git pull origin master
+            else
+              echo "Not a git repository. Skipping git pull."
+            fi
 
-            # Install any new dependencies
+            # Install dependencies (confirm Yarn is installed)
+            which yarn || echo "Yarn is not installed or in the PATH"
             yarn install --frozen-lockfile
 
             # Build TypeScript files
-            yarn build-tsup  # Adjust if needed
+            yarn build-tsup
 
-            # Restart the bot process with zero-downtime using PM2
-            pm2 reload $PM2_APP_NAME --update-env || pm2 start dist/index.js --name $PM2_APP_NAME
+            # Start or reload the bot process with PM2
+            which pm2 || echo "PM2 is not installed or in the PATH"
+            echo "Using PM2 app name: $PM2_APP_NAME"
+            pm2 reload buce-helper --update-env || pm2 start dist/index.js --name buce-helper
 
-            # Optional: Save PM2 state
+            # Save PM2 state
             pm2 save
           EOF
