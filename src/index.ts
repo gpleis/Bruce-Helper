@@ -10,12 +10,12 @@ import {
   createAudioPlayer,
   createAudioResource,
   DiscordGatewayAdapterCreator,
-  getVoiceConnection,
   joinVoiceChannel,
   NoSubscriberBehavior,
   VoiceConnectionStatus,
 } from "@discordjs/voice";
 import { BOT_TOKEN } from "./config/config";
+import cron from "node-cron";
 
 const client = new Client({
   intents: [
@@ -27,10 +27,80 @@ const client = new Client({
   ],
 });
 
-const cron = require("node-cron");
-const task = cron.schedule("0 0 */1 * * *", async () => {
-  //colocar o dingdong aqui
+const task = cron.schedule("0 0,12 * * *", async () => {
+  client.emit("gongo", client)
 });
+
+client.on("gongo", async (client) => {
+  console.log("GONGO!");
+  
+  const refugoChannels = client.channels.cache.filter((channel: VoiceChannel) => {
+    const voiceChannel = channel;
+
+    if (
+        voiceChannel.type === ChannelType.GuildVoice && 
+        voiceChannel.members.size > 0 && 
+        voiceChannel.name.toLowerCase().includes("refugo")
+      ) {
+      return voiceChannel;
+    }
+  });
+
+  if (refugoChannels.size > 0) {
+    const refugoFinal: VoiceChannel = refugoChannels.sort((a: VoiceChannel, b: VoiceChannel) => {
+      const voiceChannelA = a;
+      const voiceChannelB = b;
+      return voiceChannelB.members.size - voiceChannelA.members.size;
+  
+    }).first() as VoiceChannel;
+
+    if (refugoFinal) {
+      await refugoChannels.forEach((channel: VoiceChannel) => {
+        if(channel.id === refugoFinal.id) return;
+
+        const voiceChannel = channel as VoiceChannel;
+        const members = voiceChannel.members;
+
+        members.forEach((member) => {
+          member.voice.setChannel(refugoFinal);
+        });
+
+      });
+      
+      const voiceConnection = joinVoiceChannel({
+        channelId: refugoFinal.id,
+        guildId: refugoFinal.guild.id,
+        adapterCreator: refugoFinal.guild
+          .voiceAdapterCreator as DiscordGatewayAdapterCreator,
+      });
+
+      const resource = createAudioResource(__dirname + "/assets/bigben.mp3");
+
+      const player = createAudioPlayer({
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Play,
+        },
+      });
+
+      await voiceConnection.on(VoiceConnectionStatus.Ready, () => {
+        console.log("Voice connection is ready!");
+        voiceConnection.subscribe(player);
+        player.play(resource);
+      });
+
+      player.on("stateChange", (oldState, newState) => {
+        if (newState.status === "idle") {
+          voiceConnection.destroy()
+          return
+        }
+        
+        console.log(
+          `Audio player transitioned from ${oldState.status} to ${newState.status}`
+        );
+      })
+    }
+  }
+})
 
 client.once(Events.ClientReady, async (client) => {
   console.log(`Ready! Logged in as ${client.user?.tag}`);
@@ -62,7 +132,7 @@ client.on(Events.MessageCreate, async (message) => {
     const member = message.member;
     member?.voice.setMute(true);
   }
-  else if (message.content.toLowerCase().includes("civic")) {
+  else if (message.content.toLowerCase().includes("civic")) { 
     await message.channel.send("Você disse...");
 
     for (let i = 0; i < randInt; i++) {
@@ -71,61 +141,7 @@ client.on(Events.MessageCreate, async (message) => {
   }
 
   if (message.content === "gongo") {
-    const refugoChannels = client.channels.cache.filter((channel) => {
-      const voiceChannel = channel;
 
-      if (
-          voiceChannel.type === ChannelType.GuildVoice && 
-          voiceChannel.members.size > 0 && 
-          voiceChannel.name.toLowerCase().includes("refugo")
-        ) {
-        return voiceChannel;
-      }
-    });
-
-    if (refugoChannels.size > 0) {
-      const refugoFinal: VoiceChannel = refugoChannels.sort((a, b) => {
-        const voiceChannelA = a as VoiceChannel;
-        const voiceChannelB = b as VoiceChannel;
-        return voiceChannelB.members.size - voiceChannelA.members.size;
-    
-      }).first() as VoiceChannel;
-
-      if (refugoFinal) {
-        await refugoChannels.forEach((channel) => {
-          if(channel.id === refugoFinal.id) return;
-
-          const voiceChannel = channel as VoiceChannel;
-          const members = voiceChannel.members;
-
-          members.forEach((member) => {
-            member.voice.setChannel(refugoFinal);
-          });
-
-        });
-        
-        const voiceConnection = joinVoiceChannel({
-          channelId: refugoFinal.id,
-          guildId: refugoFinal.guild.id,
-          adapterCreator: refugoFinal.guild
-            .voiceAdapterCreator as DiscordGatewayAdapterCreator,
-        });
-
-        const resource = createAudioResource(__dirname + "/assets/bigben2.mp3");
-
-        const player = createAudioPlayer({
-          behaviors: {
-            noSubscriber: NoSubscriberBehavior.Play,
-          },
-        });
-
-        voiceConnection.on(VoiceConnectionStatus.Ready, () => {
-          console.log("Voice connection is ready!");
-          voiceConnection.subscribe(player);
-          player.play(resource);
-        }); 
-      }
-    }
   }
 });
 

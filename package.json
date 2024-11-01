@@ -40,6 +40,7 @@
     "node-cron": "^3.0.3"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.11",
     "copyfiles": "^2.4.1",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
