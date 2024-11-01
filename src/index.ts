@@ -4,6 +4,7 @@ import {
   Events,
   TextChannel,
   VoiceChannel,
+  ChannelType,
 } from "discord.js";
 import {
   createAudioPlayer,
@@ -33,9 +34,7 @@ const task = cron.schedule("0 0 */1 * * *", async () => {
 
 client.once(Events.ClientReady, async (client) => {
   console.log(`Ready! Logged in as ${client.user?.tag}`);
-});
-
-client.on(Events.ClientReady, async (thisClient) => {
+  
   const uoltipapo = client.channels.cache.get(
     "582999750308134916",
   ) as TextChannel;
@@ -54,19 +53,46 @@ client.on(Events.ClientReady, async (thisClient) => {
   uoltipapo?.send(readyMessages[messagePicker]);
 
   //pega o refugo
-  const channel = client.channels.cache.get(
-    "1300271303324074005",
-  ) as VoiceChannel;
+  // const channel = client.channels.cache.get(
+  //   "1300271303324074005",
+  // ) as VoiceChannel;
 
-  //tenta conectar
-  const connection = getVoiceConnection(channel.guild.id);
+  //pega p refugo habitado
 
-  if (!connection) {
+  const refugoChannels = client.channels.cache.filter((channel) => {
+    const voiceChannel = channel;
+    if(voiceChannel.type === ChannelType.GuildVoice 
+      && voiceChannel.members.size > 0 
+      && voiceChannel.name.toLowerCase().includes("refugo")) {
+      console.log(`achei a call boa ${voiceChannel.name}`)
+      return voiceChannel;
+    }
+  });
+
+
+  if (refugoChannels.size > 0) {
+    const refugoFinal: VoiceChannel = refugoChannels.sort((a, b) => {
+      const voiceChannelA = a as VoiceChannel;
+      const voiceChannelB = b as VoiceChannel;
+      return voiceChannelB.members.size - voiceChannelA.members.size;
+  
+    }).first() as VoiceChannel;
+    
+    await refugoChannels.forEach((channel) => {
+      if(channel.id === refugoFinal.id) return;
+      const voiceChannel = channel as VoiceChannel;
+      const members = voiceChannel.members;
+      members.forEach((member) => {
+        member.voice.setChannel(refugoFinal);
+      });
+
+    });
+    
     // aqui ele cria a conexao tarr?
     const voiceConnection = joinVoiceChannel({
-      channelId: channel.id,
-      guildId: channel.guild.id,
-      adapterCreator: channel.guild
+      channelId: refugoFinal.id,
+      guildId: refugoFinal.guild.id,
+      adapterCreator: refugoFinal.guild
         .voiceAdapterCreator as DiscordGatewayAdapterCreator,
     });
 
