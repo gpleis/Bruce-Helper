@@ -1,5 +1,4 @@
-import { format } from 'date-fns';
-import { Client, Events, Interaction, TextChannel } from 'discord.js';
+import { Client, Events, Interaction } from 'discord.js';
 
 export const name = Events.InteractionCreate;
 

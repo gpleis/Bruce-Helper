@@ -1,6 +1,6 @@
-import { Message, GuildMember, TextChannel } from 'discord.js';
+import { Message, GuildMember, TextChannel, Client } from 'discord.js';
 
-function normalizeContent(content: string): string {
+function normalizeContent(content: string): string {  
   return content
     .toLowerCase()
     .replace(/\s+/g, ' ')
@@ -34,7 +34,7 @@ export async function handleCivicDislike(message: Message) {
   }
 }
 
-export async function handleCivicMention(message: Message) {
+export async function handleCivicMention(message: Message, client: Client) {
   const normalizedContent = normalizeContent(message.content);
   if (normalizedContent.includes("civic") && !isDislikeCivic(normalizedContent)) {
     if (message.channel instanceof TextChannel) {

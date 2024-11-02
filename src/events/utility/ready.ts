@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
-import { Client, TextChannel } from 'discord.js';
+import { Client, Events, TextChannel } from 'discord.js';
 
-export const name = 'ready';
+export const name = Events.ClientReady;
 export const once = true;
 
 export function execute(client: Client) {
