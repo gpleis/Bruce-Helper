@@ -1,24 +1,44 @@
-import { Client, Collection } from 'discord.js';
+import { Client, Collection, REST, Routes } from 'discord.js';
+import { BOT_TOKEN, CLIENT_ID } from "../config/config"
 import fs from 'node:fs';
 import path from 'node:path';
 
 // Exportação nomeada da função
-export function registerCommands(client: Client) {
+export async function registerCommands(client: Client) {
   console.log("[INFO] Iniciando o registro de comandos");
+  const deployCommands = []
 
   if (!client.commands) client.commands = new Collection();
 
-  const commandsPath = path.join(__dirname, 'commands');
-  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') && file !== 'index.js');
+  const commandsPath = path.join(__dirname, "utility");
+  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts') && file !== 'index.ts');
 
   for (const file of commandFiles) {
-    const command = require(path.join(commandsPath, file));
+    const command = require(path.join(commandsPath, file)).default;
 
     if (command.data && command.execute) {
       client.commands.set(command.data.name, command);
+      deployCommands.push(command.data.toJSON())
       console.log(`[INFO] Comando carregado: ${command.data.name}`);
     } else {
       console.warn(`[WARNING] O comando em ${file} está faltando "data" ou "execute".`);
     }
   }
+
+  const rest = new REST().setToken(BOT_TOKEN);
+
+  (async () => {
+    try {
+      console.log(`[INFO] Recarregando ${deployCommands.length} comandos.`);
+
+      await rest.put(
+        Routes.applicationCommands(CLIENT_ID),
+        { body: deployCommands },
+      );
+
+      console.log(`[INFO] Novos ${deployCommands.length} comandos recarregados com sucesso.`);
+    } catch (error) {
+      console.error(error);
+    }
+  })();
 }
