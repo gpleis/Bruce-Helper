@@ -19,40 +19,10 @@ import registerListeners from './listeners';
 
   // Registra comandos, eventos e listeners
   await registerCommands(client);  // Confirma que os comandos estão sendo registrados
-  //registerEvents(client);
+  await registerEvents(client); // Carrega os arquivos para eventos
   //registerListeners(client);
 
-  client.once('ready', () => {
-    console.log(`[INFO] Bruce Helper está online! Logado como ${client.user?.tag}`);
-
-    const uoltipapo: TextChannel | undefined = client.channels.cache.get("582999750308134916") as TextChannel
-    uoltipapo.send(`Online desde ${format(new Date(), "dd/MM/yyyy - hh:mm:ss")}`)
-  });
-
-  // Faz o login do bot com o token do Discord
   client.login(BOT_TOKEN).catch((error) => {
     console.error("[ERRO] Falha ao fazer login do bot:", error);
-  });
-
-  client.on(Events.InteractionCreate, async interaction => {
-    if (!interaction.isChatInputCommand()) return;
-
-    const command = interaction.client.commands.get(interaction.commandName);
-
-    if (!command) {
-      console.error(`[ERRO] O comando ${interaction.commandName} não foi encontrado.`);
-      return;
-    }
-
-    try {
-      await command.execute(interaction);
-    } catch (error) {
-      console.error(error);
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({ content: '[ERRO] Ocorreu um erro ao rodar este comando', ephemeral: true });
-      } else {
-        await interaction.reply({ content: '[ERRO] Ocorreu um erro ao rodar este comando', ephemeral: true });
-      }
-    }
   });
 })();

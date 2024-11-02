@@ -14,14 +14,14 @@ export async function registerCommands(client: Client) {
   const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts') && file !== 'index.ts');
 
   for (const file of commandFiles) {
-    const command = require(path.join(commandsPath, file)).default;
+    const command = require(path.join(commandsPath, file));
 
     if (command.data && command.execute) {
       client.commands.set(command.data.name, command);
       deployCommands.push(command.data.toJSON())
       console.log(`[INFO] Comando carregado: ${command.data.name}`);
     } else {
-      console.warn(`[WARNING] O comando em ${file} está faltando "data" ou "execute".`);
+      console.warn(`[WARNING] O comando em ${file} está faltando "data" ou "execute"`);
     }
   }
 
@@ -29,14 +29,14 @@ export async function registerCommands(client: Client) {
 
   (async () => {
     try {
-      console.log(`[INFO] Recarregando ${deployCommands.length} comandos.`);
+      console.log(`[INFO] Recarregando ${deployCommands.length} comandos`);
 
       await rest.put(
         Routes.applicationCommands(CLIENT_ID),
         { body: deployCommands },
       );
 
-      console.log(`[INFO] Novos ${deployCommands.length} comandos recarregados com sucesso.`);
+      console.log(`[INFO] ${deployCommands.length} comandos registrados com sucesso`);
     } catch (error) {
       console.error(error);
     }
