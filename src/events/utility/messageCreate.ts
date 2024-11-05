@@ -1,15 +1,8 @@
-import { format } from 'date-fns';
-import { Client, Events, Message, TextChannel } from 'discord.js';
-import { handleCivicMention } from '../../services/civic';
+import { Client, Events, Message } from 'discord.js';
+import { onMessageCreate } from '../../listeners/events/messageCreate';
 
 export const name = Events.MessageCreate;
 
-export function execute(message: Message, client: Client) {
-	if (message.author.bot) return;
-	
-  const messageHandlers = [
-		handleCivicMention
-	]
-
-	messageHandlers.forEach(handler => handler(message, client))
+export async function execute(message: Message, client: Client): Promise<void> {
+	await onMessageCreate(message, client)
 }

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 // Exportação nomeada da função
-export async function registerCommands(client: Client) {
+export async function registerCommands(client: Client): Promise<void> {
   console.log("[INFO] Iniciando o registro de comandos");
   const deployCommands = []
 
@@ -19,7 +19,7 @@ export async function registerCommands(client: Client) {
     if (command.data && command.execute) {
       client.commands.set(command.data.name, command);
       deployCommands.push(command.data.toJSON())
-      console.log(`[INFO] Comando carregado: ${command.data.name}`);
+      console.log(`[INFO] Comando ${command.data.name} ativo`);
     } else {
       console.warn(`[WARNING] O comando em ${file} está faltando "data" ou "execute"`);
     }

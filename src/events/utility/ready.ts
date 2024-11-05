@@ -4,7 +4,7 @@ import { Client, Events, TextChannel } from 'discord.js';
 export const name = Events.ClientReady;
 export const once = true;
 
-export function execute(client: Client) {
+export async function execute(client: Client): Promise<void> {
   console.log(`[INFO] Bruce Helper está online! Logado como ${client.user?.tag}`);
 
   const bhDevChannel: TextChannel | undefined = client.channels.cache.get("1302296042196176998") as TextChannel

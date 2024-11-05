@@ -2,9 +2,7 @@ import { Client, VoiceChannel, ChannelType } from 'discord.js';
 import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, AudioPlayerStatus, VoiceConnectionStatus, DiscordGatewayAdapterCreator } from '@discordjs/voice';
 import path from 'path';
 
-export async function playGongo(client: Client) {
-  console.log("GONGO!");
-
+export async function playGongo(client: Client): Promise<void> {
   // Filtra os canais de voz que contém "refugo" no nome e possuem membros conectados
   const refugoChannels = client.channels.cache.filter(channel => {
     if (channel.type === ChannelType.GuildVoice && channel.members.size > 0 && channel.name.toLowerCase().includes("refugo")) {

@@ -2,9 +2,10 @@ import { Client } from 'discord.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
-let validEvents = 0 ;
 
 export default function registerEvents(client: Client) {
+  let validEvents = 0 ;
+
   console.log('[INFO] Iniciando o registro de eventos')
 
   const eventsPath = path.join(__dirname, "utility");
@@ -15,7 +16,7 @@ export default function registerEvents(client: Client) {
     const { name, once, execute } = event;
 
     if (!name || !execute) {
-      console.warn(`[WARNING] O evento em ${file} não possui uma propriedade 'name' ou 'execute'.`);
+      console.warn(`[WARNING] O evento em ${file} não possui uma propriedade 'name' ou 'execute'`);
       continue;
     }
 

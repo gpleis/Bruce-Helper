@@ -2,7 +2,7 @@ import { Client, Events, Interaction } from 'discord.js';
 
 export const name = Events.InteractionCreate;
 
-export async function execute(interaction: Interaction, client: Client) {
+export async function execute(interaction: Interaction, client: Client): Promise<void> {
 	if (!interaction.isChatInputCommand()) return;
 
 	const command = interaction.client.commands.get(interaction.commandName);
