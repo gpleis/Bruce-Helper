@@ -12,6 +12,13 @@ import { coloredLog } from './utils/coloredLog';
       GatewayIntentBits.GuildMessages,
       GatewayIntentBits.GuildVoiceStates,
       GatewayIntentBits.MessageContent,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.GuildInvites,
+      GatewayIntentBits.GuildIntegrations,
+      GatewayIntentBits.GuildMessageTyping,
+      GatewayIntentBits.GuildPresences,
+      GatewayIntentBits.GuildScheduledEvents
     ],
   });
 
