@@ -1,6 +1,7 @@
 import { Client, GuildMember, Message, TextChannel } from "discord.js";
 import { normalizeContent } from "../../../utils/normalizeContent";
 import { sendMessage } from "../../../utils/discord/sendMessage";
+import { coloredLog } from "../../../utils/coloredLog";
 
 function isDislikeCivic(content: string): boolean {
   const normalizedContent = normalizeContent(content);
@@ -24,8 +25,8 @@ async function handleCivicDislike(message: Message): Promise<void> {
         if (message.channel instanceof TextChannel) {
           await sendMessage(message, `${message.author}, você foi mutado por falar mal do Civic!`);
         }
-      } catch (error) {
-        console.error("Erro ao tentar mutar o usuário:", error);
+      } catch (error: any) {
+        coloredLog("Erro ao tentar mutar o usuário:" + error.message, { type: "error" });
       }
     }
   }

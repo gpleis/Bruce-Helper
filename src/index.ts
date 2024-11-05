@@ -1,9 +1,9 @@
-import { Client, GatewayIntentBits, Collection, TextChannel, Events } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { BOT_TOKEN } from './config/config';
 import { registerCommands } from './commands';
-import { format } from 'date-fns'
 import registerEvents from './events';
 import { registerSchedulers } from './schedulers';
+import { coloredLog } from './utils/coloredLog';
 
 (async (): Promise<void> => {
   const client = new Client({
@@ -15,7 +15,7 @@ import { registerSchedulers } from './schedulers';
     ],
   });
 
-  console.log("[INFO] Inicializando bot...");
+  coloredLog("Inicializando bot...", { type: "info" });
 
   // Registra eventos, schedulers e comandos
   await registerEvents(client); // Carrega os arquivos para eventos
@@ -23,6 +23,6 @@ import { registerSchedulers } from './schedulers';
   await registerCommands(client);  // Confirma que os comandos estão sendo registrados
 
   client.login(BOT_TOKEN).catch((error) => {
-    console.error("[ERRO] Falha ao fazer login do bot:", error);
+    coloredLog("Falha ao fazer login do bot: " + error.message, { type: "error" });
   });
 })();

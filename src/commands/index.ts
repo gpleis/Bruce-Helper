@@ -2,11 +2,16 @@ import { Client, Collection, REST, Routes } from 'discord.js';
 import { BOT_TOKEN, CLIENT_ID } from "../config/config"
 import fs from 'node:fs';
 import path from 'node:path';
+import { coloredLog } from '../utils/coloredLog';
+import { colors } from '../utils/colors';
+import chalk from 'chalk';
 
 // Exportação nomeada da função
 export async function registerCommands(client: Client): Promise<void> {
-  console.log("[INFO] Iniciando o registro de comandos");
+  const commandsCustomColor = colors.commands
   const deployCommands = []
+  
+  coloredLog("Iniciando o registro de comandos", { type: "info", hexColor: commandsCustomColor });
 
   if (!client.commands) client.commands = new Collection();
 
@@ -19,9 +24,9 @@ export async function registerCommands(client: Client): Promise<void> {
     if (command.data && command.execute) {
       client.commands.set(command.data.name, command);
       deployCommands.push(command.data.toJSON())
-      console.log(`[INFO] Comando ${command.data.name} ativo`);
+      coloredLog(`Comando ${chalk.italic.underline(command.data.name)} ativo`, { type: "info", hexColor: commandsCustomColor });
     } else {
-      console.warn(`[WARNING] O comando em ${file} está faltando "data" ou "execute"`);
+      coloredLog(`O comando em ${file} está faltando "data" ou "execute"`, { type: "warning" });
     }
   }
 
@@ -29,16 +34,16 @@ export async function registerCommands(client: Client): Promise<void> {
 
   (async () => {
     try {
-      console.log(`[INFO] Recarregando ${deployCommands.length} comandos`);
+      coloredLog(`Recarregando ${deployCommands.length} comandos`, { type: "info", hexColor: commandsCustomColor });
 
       await rest.put(
         Routes.applicationCommands(CLIENT_ID),
         { body: deployCommands },
       );
 
-      console.log(`[INFO] ${deployCommands.length} comandos registrados com sucesso`);
-    } catch (error) {
-      console.error(error);
+      coloredLog(`${chalk.italic(deployCommands.length)} comandos registrados com sucesso`, { type: "info", hexColor: commandsCustomColor });
+    } catch (error: any) {
+      coloredLog(error.message, { type: "error" });
     }
   })();
 }

@@ -29,6 +29,7 @@
     "@discordjs/voice": "^0.17.0",
     "@types/node": "^22.8.4",
     "bruce-helper": "file:",
+    "chalk": "^5.3.0",
     "date-fns": "^4.1.0",
     "discord-api-types": "^0.37.103",
     "discord.js": "^14.16.3",

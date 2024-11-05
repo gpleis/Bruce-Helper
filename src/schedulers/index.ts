@@ -1,11 +1,15 @@
 import { Client } from "discord.js";
 import path from "node:path";
 import fs from "node:fs";
+import { coloredLog } from "../utils/coloredLog";
+import { colors } from "../utils/colors";
+import chalk from "chalk";
 
 export async function registerSchedulers(client: Client): Promise<void> {
+	const schedulersCustomColor = colors.schedulers
 	let validSchedulers = 0;
 
-	console.log('[INFO] Iniciando o registro de schedulers')
+	coloredLog('Iniciando o registro de schedulers', { type: "info", hexColor: schedulersCustomColor })
 
 	const schedulersPath = path.join(__dirname, "jobs")
 	const schedulersFiles = fs.readdirSync(schedulersPath)
@@ -15,14 +19,14 @@ export async function registerSchedulers(client: Client): Promise<void> {
 		const { name, execute } = schedule
 
     if (!name || !execute) {
-      console.warn(`[WARNING] O schedule em ${file} não possui uma propriedade 'name' ou 'execute'.`);
+      coloredLog(`O schedule em ${file} não possui uma propriedade 'name' ou 'execute'.`, { type: "info" });
       continue;
     }
 
 		execute(client)
 		validSchedulers++;
-		console.log(`[INFO] Schedule ${name} ativo`)
+		coloredLog(`Schedule ${chalk.italic.underline(name)} ativo`, { type: "info", hexColor: schedulersCustomColor })
 	}
 
-	 console.log(`[INFO] ${validSchedulers} schedulers registrados com sucesso`)
+	 coloredLog(`${chalk.italic(validSchedulers)} schedulers registrados com sucesso`, { type: "info", hexColor: schedulersCustomColor })
 }

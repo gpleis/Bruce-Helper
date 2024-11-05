@@ -1,12 +1,15 @@
 import { Client } from 'discord.js';
 import fs from 'node:fs';
 import path from 'node:path';
-
+import { colors } from '../utils/colors';
+import { coloredLog } from '../utils/coloredLog';
+import chalk from 'chalk';
 
 export default function registerEvents(client: Client) {
-  let validEvents = 0 ;
+  const eventsCustomColor = colors.events
+  let validEvents = 0;
 
-  console.log('[INFO] Iniciando o registro de eventos')
+  coloredLog('Iniciando o registro de eventos', { type: "info", hexColor: eventsCustomColor })
 
   const eventsPath = path.join(__dirname, "utility");
   const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.ts') && file !== 'index.ts');
@@ -16,7 +19,7 @@ export default function registerEvents(client: Client) {
     const { name, once, execute } = event;
 
     if (!name || !execute) {
-      console.warn(`[WARNING] O evento em ${file} não possui uma propriedade 'name' ou 'execute'`);
+      coloredLog(`O evento em ${file} não possui uma propriedade 'name' ou 'execute'`, { type: "warning" });
       continue;
     }
 
@@ -27,8 +30,8 @@ export default function registerEvents(client: Client) {
     }
     
     validEvents++;
-    console.log(`[INFO] Evento ${name} ativo`)
+    coloredLog(`Evento ${chalk.italic.underline(name)} ativo`, { type: "info", hexColor: eventsCustomColor })
   }
 
-  console.log(`[INFO] ${validEvents} eventos registrados com sucesso`)
+  coloredLog(`${chalk.italic(validEvents)} eventos registrados com sucesso`, { type: "info", hexColor: eventsCustomColor })
 }
