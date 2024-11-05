@@ -1,6 +1,5 @@
 import { AttachmentBuilder, Client, EmbedBuilder, Message, TextChannel } from "discord.js";
-
-const { MessageEmbed, MessageAttachment } = require("discord.js");
+import { coloredLog } from "../utils/coloredLog";
 
 export function handleDotCall(client: Client, message: Message) {
   const textChannel = client.channels.cache.get(message.channelId) as TextChannel
@@ -34,11 +33,12 @@ export function handleDotCall(client: Client, message: Message) {
               `O otário do ${otario?.displayName} tentou me kickar e SE DEU MAL`,
             );
           })
-          .catch((err: any) => {
+          .catch((error: any) => {
             message.reply(
               `ALGUÉM ME AJUDA, o ${otario} tá tentando me kickar e eu não consigo me vingar`,
             );
-            console.error(err);
+
+            coloredLog(error.message, { type: "error" });
           });
       }
     } else {
@@ -88,4 +88,27 @@ export function handleDotCall(client: Client, message: Message) {
   //       message.channel.send("mais um lixo sendo banido");
   //     });
   // }
+}
+
+
+type Handler = (client: Client, message: Message) => Promise<void>;
+
+const commandHandlers: { [key: string]: Handler } = {
+    ping: async (client, message) => {
+        await message.reply('Pong!');
+    },
+    hello: async (client, message) => {
+        await message.reply('Hello there!');
+    }
+};
+
+async function handleDotCallMinified(client: Client, message: Message) {
+    const command = message.content.slice(1).trim().split(' ')[0];
+
+    const handler = commandHandlers[command];
+    if (handler) {
+        await handler(client, message);
+    } else {
+        await message.reply(`Unknown command: ${command}`);
+    }
 }
