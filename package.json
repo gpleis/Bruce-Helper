@@ -1,0 +1,28 @@
+{
+  "name": "Bruce-Helper",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint src",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "main": "dist/index.js",
+  "repository": "https://github.com/gpleis/Bruce-Helper.git",
+  "author": "gabrielfontineli <gabriel0fontineli@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.3",
+    "eslint": "^10.0.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
