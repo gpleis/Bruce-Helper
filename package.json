@@ -1,8 +1,10 @@
 {
   "name": "Bruce-Helper",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "deploy-commands": "tsx src/scripts/deploy-commands.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src",
